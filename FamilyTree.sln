@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTree.Presentation", "FamilyTree\FamilyTree.Presentation.csproj", "{3C60A671-1A62-45D8-95D1-F291D36BD5A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTree.DAL", "FamilyTree.DAL\FamilyTree.DAL.csproj", "{DCD20D33-DE96-41FA-AEFB-827DA3B126D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyTree.BLL", "FamilyTree.BLL\FamilyTree.BLL.csproj", "{F90F8AA9-9185-402F-97EA-18A987A279BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C60A671-1A62-45D8-95D1-F291D36BD5A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C60A671-1A62-45D8-95D1-F291D36BD5A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C60A671-1A62-45D8-95D1-F291D36BD5A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C60A671-1A62-45D8-95D1-F291D36BD5A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCD20D33-DE96-41FA-AEFB-827DA3B126D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCD20D33-DE96-41FA-AEFB-827DA3B126D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCD20D33-DE96-41FA-AEFB-827DA3B126D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCD20D33-DE96-41FA-AEFB-827DA3B126D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F90F8AA9-9185-402F-97EA-18A987A279BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90F8AA9-9185-402F-97EA-18A987A279BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F90F8AA9-9185-402F-97EA-18A987A279BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F90F8AA9-9185-402F-97EA-18A987A279BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
