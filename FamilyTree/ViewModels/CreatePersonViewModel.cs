@@ -19,7 +19,7 @@ namespace FamilyTree.Presentation.ViewModels
         (IFamilyTreeService familyService
         , IUserDialogService userDialog) : ViewModel
     {
-
+        public ObservableCollection<string> Genders { get; } = new ObservableCollection<string>(Enum.GetValues(typeof(Gender)).Cast<Gender>().Select(gender => gender.GetDisplayName()));
         public string Title { get; init; } = "Создать магазин";
 
         private readonly IFamilyTreeService _familyService = familyService ?? throw new ArgumentNullException(nameof(familyService));
@@ -44,10 +44,10 @@ namespace FamilyTree.Presentation.ViewModels
             try
             {
                 //// Если создание прошло успешно
-                //if (await _familyService.CreatePersonAsync(SelectedPerson))
-                //{
-                //    _userDialog.ShowInformation($"Магазин \"{SelectedPerson.Name}\" успешно создан.");
-                //}
+                if (await _familyService.CreatePersonAsync(SelectedPerson))
+                {
+                    _userDialog.ShowInformation($"Человек \"{SelectedPerson.FullName}\" успешно создан.");
+                }
             }
             catch (ArgumentException ex)
             {

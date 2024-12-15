@@ -27,7 +27,14 @@
 
         <!-- Дата рождения -->
         <TextBlock Text="Дата рождения:" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
-        <DatePicker SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5" Grid.Row="1" Grid.Column="1"/>
+        <DatePicker
+                    DisplayDateStart="1800-01-01" 
+                    SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,  FallbackValue=1800-01-01}" 
+                    Margin="5" 
+                    Grid.Row="1" 
+                    Grid.Column="1"/>
+
+
 
         <!-- Пол -->
         <TextBlock Text="Пол:" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
