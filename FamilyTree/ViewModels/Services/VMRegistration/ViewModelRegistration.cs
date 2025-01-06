@@ -7,7 +7,10 @@ namespace FamilyTree.Presentation.ViewModels.Services.VMRegistration
         public static IServiceCollection AddViewModels(this IServiceCollection services) => services
            .AddScoped<MainWindowViewModel>()
            .AddTransient<CreatePersonViewModel>()
-
-            ;
+           .AddTransient<RemovePersonViewModel>()
+           .AddTransient<AddParentChildViewModel>()
+           .AddTransient<AddParentChildViewModel>()
+           .AddTransient<AddSpouseViewModel>()
+        ;
     }
 }

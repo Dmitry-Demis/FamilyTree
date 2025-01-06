@@ -6,72 +6,39 @@
         mc:Ignorable="d"
         xmlns:viewModels1="clr-namespace:FamilyTree.Presentation.ViewModels"
         xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:FamilyTree.DAL.Model;assembly=FamilyTree.DAL"
         d:DataContext="{d:DesignInstance Type=viewModels1:MainWindowViewModel}"
         Title="{Binding Title}" Height="450" Width="950"
-        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}">
+        DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf">
     
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="210"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Border Grid.Row="0" Background="#623ED0" CornerRadius="0 50 0 30">
-            <DockPanel>
-                <!--Menu Logo-->
-                <Border Width="80" Height="80" Padding="3" Background="White" CornerRadius="100" DockPanel.Dock="Top" HorizontalAlignment="Left" Margin="20 -30 0 0">
-                    <icon:PackIconMaterial Kind="SendOutline" Width="55" Height="55" Foreground="#623ED0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3 0 0 2">
-                        <icon:PackIconMaterial.LayoutTransform>
-                            <RotateTransform Angle="-45"/>
-                        </icon:PackIconMaterial.LayoutTransform>
-                    </icon:PackIconMaterial>
-                </Border>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" Background="#623ED0">
+            <MenuItem Header="Главное меню">
+                <!-- Submenu for Create Actions -->
+                <MenuItem Header="Создать">
+                    <!-- Create Person Menu Item -->
+                    <MenuItem Header="Человека" Command="{Binding CreatePersonCommand}">
+                    </MenuItem>
 
-                <!--Menu Titles-->
-                <TextBlock Text="{Binding Title}" Foreground="White" FontSize="18" FontWeight="SemiBold" DockPanel.Dock="Top" Margin="5 25 0 10" TextAlignment="Center"
-                  TextWrapping="WrapWithOverflow"/>
+                    <!-- Add Parent Menu Item -->
+                    <MenuItem Header="Добавить семейную связь" Command="{Binding AddParentCommand}">
+                    </MenuItem>
+                    <MenuItem Header="Добавить супружескую связь" Command="{Binding AddSpouseCommand}">
+                    </MenuItem>
+                </MenuItem>
 
-                <!--Menu Seprator-->
-                <Separator Margin="15" Background="#7E5FDC" DockPanel.Dock="Top" Height="0.8"/>
-
-                <!--Menu Buttons-->
-                <StackPanel DockPanel.Dock="Top" >
-
-                    <Button Style="{StaticResource MenuButton}" Command="{Binding CreatePersonCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <icon:PackIconMaterial Kind="CartPlus" Style="{StaticResource MenuButtonIcon}"/>
-                            <TextBlock Text="Создать человека"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource MenuButton}"  Command="{Binding CreateProductsCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <icon:PackIconMaterial Kind="Store" Style="{StaticResource MenuButtonIcon}"/>
-                            <TextBlock Text="Завести товар"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Style="{StaticResource MenuButton}"
-                    Background="#7B5CD6" Foreground="White">
-                        <StackPanel Orientation="Horizontal">
-                            <icon:PackIconMaterial Kind="AccountMultipleOutline"
-                                           Style="{StaticResource MenuButtonIcon}"/>
-                            <TextBlock Text="Каталог"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button Style="{StaticResource MenuButton}"
-                    Command="{Binding ShowCartCommand}">
-                        <StackPanel Orientation="Horizontal">
-                            <icon:PackIconMaterial Kind="CashMultiple"
-                                           Style="{StaticResource MenuButtonIcon}"/>
-                            <TextBlock Text="Корзина"/>
-                        </StackPanel>
-                    </Button>
-
-                </StackPanel>
+                <!-- Remove Person Menu Item -->
+                <MenuItem Header="Удалить человека" Command="{Binding RemovePersonCommand}">
+                </MenuItem>
+            </MenuItem>
+        </Menu>
 
 
-
-            </DockPanel>
-        </Border>
+        <wv2:WebView2 Grid.Row="1" Name="WebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="Window_Loaded"/>
     </Grid>
 </Window>

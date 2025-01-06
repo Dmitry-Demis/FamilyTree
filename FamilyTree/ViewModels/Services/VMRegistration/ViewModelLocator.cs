@@ -9,5 +9,8 @@ namespace FamilyTree.Presentation.ViewModels.Services.VMRegistration
 
         public static MainWindowViewModel MainWindowViewModel => Resolve<MainWindowViewModel>();
         public static CreatePersonViewModel CreatePersonViewModel => Resolve<CreatePersonViewModel>();
+        public static RemovePersonViewModel RemovePersonViewModel => Resolve<RemovePersonViewModel>();
+        public static AddParentChildViewModel AddParentChildViewModel => Resolve<AddParentChildViewModel>();
+        public static AddSpouseViewModel AddSpouseViewModel => Resolve<AddSpouseViewModel>();
     }
 }

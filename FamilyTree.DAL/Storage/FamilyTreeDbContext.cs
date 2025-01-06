@@ -10,21 +10,23 @@ public class FamilyTreeDbContext(DbContextOptions<FamilyTreeDbContext> options) 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Настройка FamilyRelation
         modelBuilder.Entity<FamilyRelation>()
-            .HasKey(pc => new { pc.ParentId, pc.ChildId });
+            .HasKey(fr => fr.Id); // Указываем Id как первичный ключ
 
         modelBuilder.Entity<FamilyRelation>()
-            .HasOne(pc => pc.Parent)
+            .HasOne(fr => fr.Parent)
             .WithMany(p => p.Children)
-            .HasForeignKey(pc => pc.ParentId)
+            .HasForeignKey(fr => fr.ParentId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<FamilyRelation>()
-            .HasOne(pc => pc.Child)
+            .HasOne(fr => fr.Child)
             .WithMany(p => p.Parents)
-            .HasForeignKey(pc => pc.ChildId)
+            .HasForeignKey(fr => fr.ChildId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Настройка Person
         modelBuilder.Entity<Person>()
             .HasOne(p => p.Spouse)
             .WithOne()
@@ -32,3 +34,4 @@ public class FamilyTreeDbContext(DbContextOptions<FamilyTreeDbContext> options) 
             .OnDelete(DeleteBehavior.SetNull);
     }
 }
+

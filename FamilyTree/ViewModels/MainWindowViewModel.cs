@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using FamilyTree.BLL.Services;
 using FamilyTree.DAL.Model;
 using FamilyTree.Presentation.Views.Windows;
 using MathCore.ViewModels;
@@ -9,29 +10,56 @@ namespace FamilyTree.Presentation.ViewModels
 {
     public class MainWindowViewModel : ViewModel
     {
-
-        public string Title { get; init; } = "Генеалогическое древо";
+        private readonly IFamilyTreeService _familyTreeService;
+        public string Title => "Генеалогическое древо";
 
         private ICommand? _createPersonCommand;
 
         public ICommand CreatePersonCommand =>
             _createPersonCommand ??= new LambdaCommand(App.OpenWindow<CreatePersonWindow>);
 
-        public async Task<ObservableCollection<Person>> LoadFamilyTreeFromDatabaseAsync()
+
+        private ICommand? _removePersonCommand;
+
+        public ICommand RemovePersonCommand =>
+            _removePersonCommand ??= new LambdaCommand(App.OpenWindow<RemovePersonWindow>);
+
+        public ObservableCollection<Person> FamilyTree { get; } = new ObservableCollection<Person>();
+        public MainWindowViewModel(IFamilyTreeService familyTreeService)
         {
-            // Пример загрузки данных из базы данных
-            //var people = await _dbContext.People
-            //    .Include(p => p.Children) // Подключаем детей
-            //    .ToListAsync();
-
-            //var familyTree = people.Select(p => new Person
-            //{
-            //    Name = p.Name,
-            //    Children = new ObservableCollection<Person>(p.Children.Select(c => new Person { Name = c.Name }))
-            //}).ToList();
-
-            //return new ObservableCollection<Person>(familyTree);
-            return new ObservableCollection<Person>();
+            _familyTreeService = familyTreeService ?? throw new ArgumentNullException(nameof(familyTreeService));
+            _ = LoadFamilyTreeAsync();
         }
+
+        // Метод для загрузки семейного дерева
+        public async Task LoadFamilyTreeAsync()
+        {
+            try
+            {
+                // Загрузка данных
+                var people = await _familyTreeService.LoadPeopleAsync();
+
+                // Очистка и добавление загруженных данных в ObservableCollection
+                FamilyTree.Clear();
+                foreach (var person in people)
+                {
+                    FamilyTree.Add(person);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибок
+                // Можно добавить уведомление об ошибке пользователю
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private ICommand? _AddParentCommand;
+        public ICommand AddParentCommand =>
+            _AddParentCommand ??= new LambdaCommand(App.OpenWindow<AddParentChildWindow>);
+
+        private ICommand? _AddSpouseCommand;
+        public ICommand AddSpouseCommand =>
+            _AddSpouseCommand ??= new LambdaCommand(App.OpenWindow<AddSpouseWindow>);
     }
 }

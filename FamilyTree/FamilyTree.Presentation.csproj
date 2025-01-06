@@ -9,6 +9,10 @@
 		<StartupObject>FamilyTree.Presentation.Program</StartupObject>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="Views\Windows\family-tree.html" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<ProjectReference Include="..\FamilyTree.BLL\FamilyTree.BLL.csproj" />
@@ -21,6 +25,7 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
 		<PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
 	</ItemGroup>
 
 
@@ -28,6 +33,11 @@
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Database\" />
 	</ItemGroup>
 
 </Project>

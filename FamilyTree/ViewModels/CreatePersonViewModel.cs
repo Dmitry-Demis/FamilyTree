@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using FamilyTree.BLL.Services;
 using FamilyTree.DAL.Model;
@@ -9,22 +11,19 @@ using MathCore.WPF.Commands;
 
 namespace FamilyTree.Presentation.ViewModels
 {
-    public class GenderItem
+    public class CreatePersonViewModel : ViewModel
     {
-        public Gender Gender { get; set; }
-        public string DisplayName { get; set; }
-    }
+        public static string Title => "Создать человека";
 
-    public class CreatePersonViewModel
-        (IFamilyTreeService familyService
-        , IUserDialogService userDialog) : ViewModel
-    {
-        public ObservableCollection<string> Genders { get; } = new ObservableCollection<string>(Enum.GetValues(typeof(Gender)).Cast<Gender>().Select(gender => gender.GetDisplayName()));
-        public string Title { get; init; } = "Создать магазин";
+        // Инициализация списка полов через Enum
+        public ObservableCollection<Gender> Genders { get; } = new(
+            Enum.GetValues(typeof(Gender)).Cast<Gender>()
+        );
 
-        private readonly IFamilyTreeService _familyService = familyService ?? throw new ArgumentNullException(nameof(familyService));
-        private readonly IUserDialogService _userDialog = userDialog ?? throw new ArgumentNullException(nameof(userDialog));
+        private readonly IFamilyTreeService _familyService;
+        private readonly IUserDialogService _userDialog;
 
+        // Инициализация выбранного человека
         private PersonWrapper _selectedPerson = new(new Person());
         public PersonWrapper SelectedPerson
         {
@@ -32,36 +31,50 @@ namespace FamilyTree.Presentation.ViewModels
             set => Set(ref _selectedPerson, value);
         }
 
+        // Ленивая инициализация команды
         private ICommand? _createPersonCommand;
         public ICommand CreatePersonCommand => _createPersonCommand ??= new LambdaCommandAsync(OnCreatePersonExecutedAsync, CanCreatePersonExecute);
 
-        private bool CanCreatePersonExecute() =>
-            Services.Extensions.StringExtensions.IsNotNullOrWhiteSpace(SelectedPerson.FullName);
+        // Конструктор
+        public CreatePersonViewModel(IFamilyTreeService familyService, IUserDialogService userDialog)
+        {
+            _familyService = familyService ?? throw new ArgumentNullException(nameof(familyService));
+            _userDialog = userDialog ?? throw new ArgumentNullException(nameof(userDialog));
 
-        // Метод, вызываемый при выполнении команды
+            // Установка даты рождения по умолчанию, если она не задана
+            SelectedPerson.DateOfBirth = SelectedPerson.DateOfBirth == DateTime.MinValue
+                ? new DateTime(1800, 1, 1)
+                : SelectedPerson.DateOfBirth;
+        }
+
+        // Условие для активации команды создания человека
+        private bool CanCreatePersonExecute() =>
+            !string.IsNullOrWhiteSpace(SelectedPerson.Name);
+
+        // Метод для выполнения создания человека
         private async Task OnCreatePersonExecutedAsync()
         {
             try
             {
-                //// Если создание прошло успешно
-                if (await _familyService.CreatePersonAsync(SelectedPerson))
+                // Проверка успешности создания человека
+                if (await _familyService.AddPersonToTreeAsync(SelectedPerson))
                 {
-                    _userDialog.ShowInformation($"Человек \"{SelectedPerson.FullName}\" успешно создан.");
+                    _userDialog.ShowInformation($"Человек \"{SelectedPerson.Name}\" успешно создан.");
                 }
             }
             catch (ArgumentException ex)
             {
-                // Ошибка, если имя или адрес пустые
-                _userDialog.ShowError(ex.Message);
+                // Отображение ошибки, если имя или адрес пустые
+                _userDialog.ShowError($"Ошибка: {ex.Message}");
             }
             catch (Exception ex)
             {
-                // Общая ошибка при создании магазина
-                _userDialog.ShowError($"Ошибка при создании магазина: {ex.Message}");
+                // Общая ошибка при создании
+                _userDialog.ShowError($"Ошибка при создании человека: {ex.Message}");
             }
             finally
             {
-                // Закрытие диалога (если нужно)
+                // Закрытие диалога, если нужно
                 _userDialog.Close();
             }
         }

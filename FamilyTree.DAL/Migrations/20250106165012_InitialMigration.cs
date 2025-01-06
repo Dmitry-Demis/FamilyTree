@@ -17,7 +17,7 @@ namespace FamilyTree.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FullName = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Gender = table.Column<int>(type: "INTEGER", nullable: false),
                     SpouseId = table.Column<int>(type: "INTEGER", nullable: true)
@@ -37,12 +37,14 @@ namespace FamilyTree.DAL.Migrations
                 name: "FamilyRelations",
                 columns: table => new
                 {
-                    ParentId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ChildId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ParentId = table.Column<int>(type: "INTEGER", nullable: true),
+                    ChildId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyRelations", x => new { x.ParentId, x.ChildId });
+                    table.PrimaryKey("PK_FamilyRelations", x => x.Id);
                     table.ForeignKey(
                         name: "FK_FamilyRelations_Persons_ChildId",
                         column: x => x.ChildId,
@@ -61,6 +63,11 @@ namespace FamilyTree.DAL.Migrations
                 name: "IX_FamilyRelations_ChildId",
                 table: "FamilyRelations",
                 column: "ChildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FamilyRelations_ParentId",
+                table: "FamilyRelations",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_SpouseId",

@@ -8,10 +8,10 @@ namespace FamilyTree.Presentation.Models
     {
         public int Id => Base.Id;
 
-        public string FullName
+        public string Name
         {
-            get => Base.FullName;
-            set => Set(() => Base.FullName, v => Base.FullName = v, value);
+            get => Base.Name;
+            set => Set(() => Base.Name, v => Base.Name = v, value);
         }
 
         public DateTime DateOfBirth
@@ -32,8 +32,8 @@ namespace FamilyTree.Presentation.Models
             set => Set(() => Base.SpouseId, v => Base.SpouseId = v, value);
         }
 
-        public ICollection<FamilyRelation> Parents => Base.Parents;
+        public IEnumerable<FamilyRelation>? Parents => Base.Parents;
 
-        public ICollection<FamilyRelation> Children => Base.Children;
+        public IEnumerable<FamilyRelation> Children => Base.Children;
     }
 }

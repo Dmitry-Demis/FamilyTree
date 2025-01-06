@@ -4,10 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:FamilyTree.Presentation.ViewModels"
+        xmlns:extensions="clr-namespace:FamilyTree.Presentation.ViewModels.Services.Extensions"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         DataContext="{Binding CreatePersonViewModel, Source={StaticResource Locator}}"
-        Title="Создать Человека" SizeToContent="Height" Width="400"
+        Title="{Binding Title}" SizeToContent="Height" Width="400"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <extensions:GenderToDisplayNameConverter x:Key="GenderToDisplayNameConverter" />
+    </Window.Resources>
     <Grid Margin="10">
         <!-- Определяем три строки и два столбца -->
         <Grid.RowDefinitions>
@@ -23,26 +28,31 @@
 
         <!-- ФИО -->
         <TextBlock Text="ФИО:" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
-        <TextBox Text="{Binding SelectedPerson.FullName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5" Grid.Row="0" Grid.Column="1"/>
+        <TextBox Text="{Binding SelectedPerson.Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="5" Grid.Row="0" Grid.Column="1"/>
 
         <!-- Дата рождения -->
         <TextBlock Text="Дата рождения:" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
         <DatePicker
-                    DisplayDateStart="1800-01-01" 
-                    SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,  FallbackValue=1800-01-01}" 
-                    Margin="5" 
-                    Grid.Row="1" 
-                    Grid.Column="1"/>
+            DisplayDateStart="1800-01-01"
+            SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue={x:Static sys:DateTime.Now}}"
+            Margin="5"
+            Grid.Row="1"
+            Grid.Column="1"/>
+
 
 
 
         <!-- Пол -->
         <TextBlock Text="Пол:" VerticalAlignment="Center" Margin="5" Grid.Row="2" Grid.Column="0"/>
-        <ComboBox ItemsSource="{Binding Genders}" 
-                  SelectedValue="{Binding SelectedPerson.Gender, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
-                  SelectedValuePath="Gender"
-                  DisplayMemberPath="DisplayName"
-                  Margin="5" Grid.Row="2" Grid.Column="1"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Margin="5"
+                  ItemsSource="{Binding Genders}" SelectedItem="{Binding SelectedPerson.Gender}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource GenderToDisplayNameConverter}}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
 
         <!-- Кнопка для создания человека -->
         <Button Content="Создать человека" Command="{Binding CreatePersonCommand}"

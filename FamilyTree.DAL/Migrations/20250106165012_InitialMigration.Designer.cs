@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyTree.DAL.Migrations
 {
     [DbContext(typeof(FamilyTreeDbContext))]
-    [Migration("20241215193105_InitialMigration")]
+    [Migration("20250106165012_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -22,15 +22,21 @@ namespace FamilyTree.DAL.Migrations
 
             modelBuilder.Entity("FamilyTree.DAL.Model.FamilyRelation", b =>
                 {
-                    b.Property<int>("ParentId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ChildId")
+                    b.Property<int?>("ChildId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ParentId", "ChildId");
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ChildId");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("FamilyRelations");
                 });
@@ -44,12 +50,12 @@ namespace FamilyTree.DAL.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Gender")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("SpouseId")
                         .HasColumnType("INTEGER");
@@ -67,14 +73,12 @@ namespace FamilyTree.DAL.Migrations
                     b.HasOne("FamilyTree.DAL.Model.Person", "Child")
                         .WithMany("Parents")
                         .HasForeignKey("ChildId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("FamilyTree.DAL.Model.Person", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Child");
 
