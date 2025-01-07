@@ -8,6 +8,7 @@ using FamilyTree.DAL.Model;
 using System.Windows.Input;
 using FamilyTree.Presentation.ViewModels.Services.Dialogs;
 using MathCore.WPF.Commands;
+using System.Collections.Generic;
 
 namespace FamilyTree.Presentation.ViewModels
 {
@@ -21,15 +22,24 @@ namespace FamilyTree.Presentation.ViewModels
         // Коллекция мужчин
         public ObservableCollection<PersonWrapper> Men { get; private set; } = new ObservableCollection<PersonWrapper>();
 
-        // Коллекция женщин
+        // Коллекция женщин, отфильтрованных для выбранного мужчины
         public ObservableCollection<PersonWrapper> Women { get; private set; } = new ObservableCollection<PersonWrapper>();
+
+        // Словарь всех людей, разделённых по полу
+        private Dictionary<Gender, List<PersonWrapper>> _peopleByGender = new();
 
         // Выбранный мужчина
         private PersonWrapper? _selectedMan;
         public PersonWrapper? SelectedMan
         {
             get => _selectedMan;
-            set => Set(ref _selectedMan, value);
+            set
+            {
+                if (Set(ref _selectedMan, value))
+                {
+                    UpdateWomenList(); // Обновляем список женщин при изменении выбранного мужчины
+                }
+            }
         }
 
         // Выбранная женщина
@@ -46,10 +56,10 @@ namespace FamilyTree.Presentation.ViewModels
         {
             _familyService = familyService;
             _userDialog = userDialog;
-            _ = LoadPeopleAsync(); // Загрузка мужчин и женщин
+            _ = LoadPeopleAsync(); // Загрузка людей при создании окна
         }
 
-        // Загрузка людей и разделение их на мужчин и женщин
+        // Загрузка людей из репозитория
         private async Task LoadPeopleAsync()
         {
             try
@@ -58,31 +68,23 @@ namespace FamilyTree.Presentation.ViewModels
                     .Select(person => new PersonWrapper(person))
                     .ToList();
 
-                Men.Clear();
-                Women.Clear();
+                // Группировка людей по полу
+                _peopleByGender = people
+                    .GroupBy(person => person.Gender)
+                    .ToDictionary(g => g.Key, g => g.ToList());
 
-                foreach (var person in people)
+                // Заполняем список мужчин
+                Men.Clear();
+                if (_peopleByGender.TryGetValue(Gender.Male, out var men))
                 {
-                    switch (person)
+                    foreach (var man in men.OrderBy(p => p.Name))
                     {
-                        case { Gender: Gender.Male }:
-                            Men.Add(person);
-                            break;
-                        case { Gender: Gender.Female }:
-                            Women.Add(person);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        Men.Add(man);
                     }
                 }
 
-                // Сортировка коллекций
-                Men = new ObservableCollection<PersonWrapper>(Men.OrderBy(p => p.Name));
-                Women = new ObservableCollection<PersonWrapper>(Women.OrderBy(p => p.Name));
-
-                // Установка первых значений
+                // Устанавливаем первый выбранный элемент
                 SelectedMan = Men.FirstOrDefault();
-                SelectedWoman = Women.FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -90,30 +92,47 @@ namespace FamilyTree.Presentation.ViewModels
             }
         }
 
+        // Обновление списка женщин на основе выбранного мужчины
+        private void UpdateWomenList()
+        {
+            Women.Clear();
+            if (SelectedMan == null) return;
+
+            if (_peopleByGender.TryGetValue(Gender.Female, out var women))
+            {
+                var filteredWomen = women
+                    .Where(woman => IsAgeDifferenceValid(SelectedMan.DateOfBirth, woman.DateOfBirth)
+                                    && !IsParentChildRelation(SelectedMan, woman))
+                    .OrderBy(woman => woman.Name);
+
+                foreach (var woman in filteredWomen)
+                {
+                    Women.Add(woman);
+                }
+            }
+
+            // Устанавливаем первую женщину в списке
+            SelectedWoman = Women.FirstOrDefault();
+        }
+
+        // Команда для создания супружеской связи
         private ICommand? _createRelationCommand;
         public ICommand CreateRelationCommand =>
-            _createRelationCommand ??= new LambdaCommandAsync(CreateSpouseRelationAsync, ()=> SelectedMan is not null && SelectedWoman is not null);
+            _createRelationCommand ??= new LambdaCommandAsync(CreateSpouseRelationAsync,
+                () => SelectedMan is not null && SelectedWoman is not null);
 
-        // Установление связи между мужчиной и женщиной
         private async Task CreateSpouseRelationAsync()
         {
-            if (SelectedMan == null || SelectedWoman == null)
-            {
-                Console.WriteLine("Выберите мужчину и женщину для установления связи.");
-                return;
-            }
+            if (SelectedMan == null || SelectedWoman == null) return;
 
             try
             {
-                var man = SelectedMan;
-                var woman = SelectedWoman;
-
-                // Установить супружескую связь
-                bool success = await _familyService.AddSpouseRelationAsync(man, woman);
+                // Создание связи
+                bool success = await _familyService.AddSpouseRelationAsync(SelectedMan, SelectedWoman);
 
                 _userDialog.ShowInformation(success
-                    ? $"Супруги {man.Name} и {woman.Name} успешно связаны."
-                    : $"Не удалось установить связь между {man.Name} и {woman.Name}.");
+                    ? $"Супруги {SelectedMan.Name} и {SelectedWoman.Name} успешно связаны."
+                    : $"Не удалось установить связь между {SelectedMan.Name} и {SelectedWoman.Name}.");
                 _userDialog.Close();
                 SelectedMan = null;
                 SelectedWoman = null;
@@ -122,6 +141,20 @@ namespace FamilyTree.Presentation.ViewModels
             {
                 _userDialog.ShowError($"Ошибка при добавлении супруга: {ex.Message}");
             }
+        }
+
+        // Проверка разницы в возрасте
+        private bool IsAgeDifferenceValid(DateTime manBirthDate, DateTime womanBirthDate)
+        {
+            var ageDifference = Math.Abs(manBirthDate.Year - womanBirthDate.Year);
+            return ageDifference <= 20;
+        }
+
+        // Проверка на родительско-детские отношения
+        private bool IsParentChildRelation(PersonWrapper man, PersonWrapper woman)
+        {
+            return man.Children.Any(child => child.Id == woman.Id) ||
+                   woman.Children.Any(child => child.Id == man.Id);
         }
     }
 }

@@ -29,6 +29,7 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         }
     }
 
+
     public async Task<bool> RemovePersonAsync(int personId)
     {
         try

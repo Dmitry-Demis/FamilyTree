@@ -85,14 +85,14 @@ namespace FamilyTree.Presentation.ViewModels
 
                 // Сортируем родителей и детей по алфавиту
                 Parents = new ObservableCollection<PersonWrapper>(Parents
-                    .OrderBy(p => p.Gender)
-                    .ThenBy(p => p.DateOfBirth)
+                    .OrderBy(p => p.DateOfBirth)
+                    .ThenBy(p => p.Gender)
                     .ThenBy(p=>p.Name)
                 );
                 Children = new ObservableCollection<PersonWrapper>(Children
-                    .OrderBy(p => p.Gender)
-                    .ThenBy(p => p.DateOfBirth)
-                    .ThenBy(p => p.Name)
+                        .OrderBy(p => p.DateOfBirth)
+                        .ThenBy(p => p.Gender)
+                        .ThenBy(p => p.Name)
                 );
 
                 // Устанавливаем первого родителя по умолчанию
