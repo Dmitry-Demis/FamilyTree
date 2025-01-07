@@ -36,4 +36,5 @@ internal class DbRepository<T>(FamilyTreeDbContext db) : IRepository<T> where T 
             await db.SaveChangesAsync(cancel).ConfigureAwait(false);
     }
     public async Task<IEnumerable<T>?> GetAllAsync(CancellationToken cancel = default) => await _set.ToListAsync(cancel).ConfigureAwait(false);
+    public IQueryable<T>? Items => _set;
 }

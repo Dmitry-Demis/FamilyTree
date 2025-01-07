@@ -12,5 +12,6 @@ namespace FamilyTree.DAL.Storage
         Task<T> AddAsync(T item, CancellationToken cancel = default);
         Task UpdateAsync(T item, CancellationToken cancel = default);
         Task RemoveAsync(int id, CancellationToken cancel = default);
+        IQueryable<T>? Items { get; }
     }
 }

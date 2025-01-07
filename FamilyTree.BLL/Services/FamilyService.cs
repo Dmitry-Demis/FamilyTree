@@ -1,5 +1,6 @@
 ﻿using FamilyTree.DAL.Model;
 using FamilyTree.DAL.Storage;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamilyTree.BLL.Services;
 
@@ -60,43 +61,14 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
     {
         try
         {
-            // Загружаем всех людей из репозитория
-            var people = await _repository.GetAllAsync() ?? new List<Person>();
-
-            // Используем словари для быстрого поиска родителей, детей и супругов
-            var peopleDict = people.ToDictionary(p => p.Id);
-
-            // Обрабатываем каждую запись о человеке
-            foreach (var person in people)
-            {
-                // Инициализируем коллекции, если они null
-                person.Parents = person.Parents ?? new List<FamilyRelation>();
-                person.Children = person.Children ?? new List<FamilyRelation>();
-
-                // Загружаем родителей
-                if (person.Parents.Any()) // Проверяем, есть ли родители
-                {
-                    person.Parents = people
-                        .Where(p => p.Children.Any(c => c.ChildId == person.Id))  // Фильтрация по детям
-                        .Select(p => new FamilyRelation { ParentId = p.Id, Parent = p })  // Создание связи родитель-ребёнок
-                        .ToList();
-                }
-
-                // Загружаем детей
-                if (person.Children.Any()) // Проверяем, есть ли дети
-                {
-                    person.Children = people
-                        .Where(p => p.Parents.Any(c => c.ParentId == person.Id))  // Фильтрация по родителям
-                        .Select(p => new FamilyRelation { ChildId = p.Id, Child = p })  // Создание связи родитель-ребёнок
-                        .ToList();
-                }
-
-                // Загружаем супруга, проверяя, что SpouseId не null
-                if (person.SpouseId.HasValue)
-                {
-                    person.Spouse = peopleDict.GetValueOrDefault(person.SpouseId.Value);  // Быстрый поиск супруга по Id
-                }
-            }
+            // Загружаем людей вместе с их связями
+            var people = await _repository.Items
+                .Include(p => p.Parents) // Загружаем родителей
+                .ThenInclude(fr => fr.Parent) // Включаем информацию о родителях
+                .Include(p => p.Children) // Загружаем детей
+                .ThenInclude(fr => fr.Child) // Включаем информацию о детях
+                .Include(p => p.Spouse) // Загружаем супругов
+                .ToListAsync();
 
             return people;
         }
@@ -105,6 +77,7 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
             throw new InvalidOperationException("Ошибка при загрузке семейного дерева", ex);
         }
     }
+
 
     public async Task<bool> AddParentChildRelationAsync(Person parent, Person child)
     {
