@@ -17,6 +17,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\FamilyTree.BLL\FamilyTree.BLL.csproj" />
 		<ProjectReference Include="..\FamilyTree.DAL\FamilyTree.DAL.csproj" />
+		<PackageReference Include="GraphSharp" Version="1.1.0" />
 		<PackageReference Include="MathCore.WPF" Version="0.0.48" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
 			<PrivateAssets>all</PrivateAssets>

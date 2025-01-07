@@ -5,12 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:viewModels1="clr-namespace:FamilyTree.Presentation.ViewModels"
-        xmlns:icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:local="clr-namespace:FamilyTree.DAL.Model;assembly=FamilyTree.DAL"
         d:DataContext="{d:DesignInstance Type=viewModels1:MainWindowViewModel}"
         Title="{Binding Title}" Height="450" Width="950"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf">
+        xmlns:controls="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -22,23 +20,22 @@
                 <!-- Submenu for Create Actions -->
                 <MenuItem Header="Создать">
                     <!-- Create Person Menu Item -->
-                    <MenuItem Header="Человека" Command="{Binding CreatePersonCommand}">
-                    </MenuItem>
-
+                    <MenuItem Header="Человека" Command="{Binding CreatePersonCommand}" />
+                </MenuItem>
+                <MenuItem Header="Добавить">
                     <!-- Add Parent Menu Item -->
-                    <MenuItem Header="Добавить семейную связь" Command="{Binding AddParentCommand}">
-                    </MenuItem>
-                    <MenuItem Header="Добавить супружескую связь" Command="{Binding AddSpouseCommand}">
-                    </MenuItem>
+                    <MenuItem Header="Семейную связь" Command="{Binding AddParentCommand}" />
+                    <MenuItem Header="Супружескую связь" Command="{Binding AddSpouseCommand}" />
                 </MenuItem>
-
                 <!-- Remove Person Menu Item -->
-                <MenuItem Header="Удалить человека" Command="{Binding RemovePersonCommand}">
-                </MenuItem>
+                <MenuItem Header="Удалить человека" Command="{Binding RemovePersonCommand}" />
             </MenuItem>
         </Menu>
 
-
-        <wv2:WebView2 Grid.Row="1" Name="WebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Loaded="Window_Loaded"/>
+        <controls:GraphLayout Background="Aqua"
+                           Grid.Row="1"
+                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                           Graph="{Binding FamilyGraph, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           />
     </Grid>
 </Window>

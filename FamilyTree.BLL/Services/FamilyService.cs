@@ -251,4 +251,20 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         return ancestors;
     }
 
+    public async Task<IEnumerable<Person>> GetCommonAncestorsAsync(Person p1, Person p2)
+    {
+        if (p1 == null || p2 == null)
+            throw new ArgumentNullException("Оба человека должны быть указаны.");
+
+        // Получаем всех предков первого человека
+        var ancestors1 = (await GetAllAncestorsAsync(p1)).ToHashSet();
+
+        // Получаем всех предков второго человека
+        var ancestors2 = (await GetAllAncestorsAsync(p2)).ToHashSet();
+
+        // Находим пересечение двух множеств предков
+        var commonAncestors = ancestors1.Intersect(ancestors2);
+
+        return commonAncestors;
+    }
 }

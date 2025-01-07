@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModels="clr-namespace:FamilyTree.Presentation.ViewModels"
         xmlns:extensions="clr-namespace:FamilyTree.Presentation.ViewModels.Services.Extensions"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
@@ -37,7 +36,8 @@
             SelectedDate="{Binding SelectedPerson.DateOfBirth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue={x:Static sys:DateTime.Now}}"
             Margin="5"
             Grid.Row="1"
-            Grid.Column="1"/>
+            Grid.Column="1"
+            DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
 
 
 

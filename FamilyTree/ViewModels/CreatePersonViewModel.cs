@@ -48,8 +48,13 @@ namespace FamilyTree.Presentation.ViewModels
         }
 
         // Условие для активации команды создания человека
-        private bool CanCreatePersonExecute() =>
-            !string.IsNullOrWhiteSpace(SelectedPerson.Name);
+        private bool CanCreatePersonExecute()
+        {
+            // Проверка, что имя задано и дата рождения корректна
+            return !string.IsNullOrWhiteSpace(SelectedPerson.Name) &&
+                   SelectedPerson.DateOfBirth >= new DateTime(1800, 1, 1) &&
+                   SelectedPerson.DateOfBirth <= DateTime.Now;
+        }
 
         // Метод для выполнения создания человека
         private async Task OnCreatePersonExecutedAsync()
