@@ -84,8 +84,16 @@ namespace FamilyTree.Presentation.ViewModels
                 }
 
                 // Сортируем родителей и детей по алфавиту
-                Parents = new ObservableCollection<PersonWrapper>(Parents.OrderBy(p => p.Name));
-                Children = new ObservableCollection<PersonWrapper>(Children.OrderBy(c => c.Name));
+                Parents = new ObservableCollection<PersonWrapper>(Parents
+                    .OrderBy(p => p.Gender)
+                    .ThenBy(p => p.DateOfBirth)
+                    .ThenBy(p=>p.Name)
+                );
+                Children = new ObservableCollection<PersonWrapper>(Children
+                    .OrderBy(p => p.Gender)
+                    .ThenBy(p => p.DateOfBirth)
+                    .ThenBy(p => p.Name)
+                );
 
                 // Устанавливаем первого родителя по умолчанию
                 SelectedParent = Parents.FirstOrDefault();
@@ -135,7 +143,7 @@ namespace FamilyTree.Presentation.ViewModels
         // Метод для проверки, входит ли возраст в интервал от 18 до 30 лет
         private static bool IsAgeInRange(DateTime parentBirthDate, DateTime personBirthDate)
         {
-            var ageDifference = parentBirthDate.Year - personBirthDate.Year;
+            var ageDifference = personBirthDate.Year - parentBirthDate.Year; 
 
             // Проверка, если возраст человека минимум 18 лет больше родителя и максимум 30 лет
             return ageDifference is >= 18 and <= 30;
