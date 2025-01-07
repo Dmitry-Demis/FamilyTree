@@ -42,9 +42,7 @@ namespace FamilyTree.Presentation.ViewModels
             _userDialog = userDialog ?? throw new ArgumentNullException(nameof(userDialog));
 
             // Установка даты рождения по умолчанию, если она не задана
-            SelectedPerson.DateOfBirth = SelectedPerson.DateOfBirth == DateTime.MinValue
-                ? new DateTime(1800, 1, 1)
-                : SelectedPerson.DateOfBirth;
+            SelectedPerson.DateOfBirth = DateTime.Now;
         }
 
         // Условие для активации команды создания человека

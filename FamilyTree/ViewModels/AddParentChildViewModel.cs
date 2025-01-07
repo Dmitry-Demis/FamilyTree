@@ -102,38 +102,49 @@ namespace FamilyTree.Presentation.ViewModels
         // Метод для обновления списка детей, исключив выбранного родителя
         private void UpdateChildrenList()
         {
-            if (SelectedParent != null)
+            if (SelectedParent == null) return;
+            // Очищаем текущий список детей
+            Children.Clear();
+
+            // Получаем дату рождения выбранного родителя
+            var parentBirthDate = SelectedParent.DateOfBirth;
+
+            // Проверяем и добавляем детей, которые соответствуют возрастному фильтру
+            foreach (var person in Parents)
             {
-                // Очищаем текущий список детей
-                Children.Clear();
-
-                // Добавляем всех людей, кроме выбранного родителя
-                foreach (var person in Parents)
+                // Если человек не выбранный родитель и его возраст между 18 и 30 годами относительно выбранного родителя
+                if (person != SelectedParent && IsAgeInRange(parentBirthDate, person.DateOfBirth))
                 {
-                    if (person != SelectedParent)
-                    {
-                        Children.Add(person);
-                    }
-                }
-
-                // Если выбранный ребенок не присутствует в списке, сбрасываем его
-                if (SelectedChild != null && !Children.Contains(SelectedChild))
-                {
-                    SelectedChild = null;
-                }
-
-                // Если после фильтрации детей выбранного ребенка нет, выбираем первого из оставшихся
-                if (SelectedChild == null && Children.Any())
-                {
-                    SelectedChild = Children.FirstOrDefault();
+                    Children.Add(person);
                 }
             }
+
+            // Если выбранный ребенок не присутствует в списке, сбрасываем его
+            if (SelectedChild != null && !Children.Contains(SelectedChild))
+            {
+                SelectedChild = null;
+            }
+
+            // Если после фильтрации детей выбранного ребенка нет, выбираем первого из оставшихся
+            if (SelectedChild == null && Children.Any())
+            {
+                SelectedChild = Children.FirstOrDefault();
+            }
+        }
+
+        // Метод для проверки, входит ли возраст в интервал от 18 до 30 лет
+        private static bool IsAgeInRange(DateTime parentBirthDate, DateTime personBirthDate)
+        {
+            var ageDifference = parentBirthDate.Year - personBirthDate.Year;
+
+            // Проверка, если возраст человека минимум 18 лет больше родителя и максимум 30 лет
+            return ageDifference is >= 18 and <= 30;
         }
 
 
         private ICommand? _ParentChildConnectionCommand;
         public ICommand ParentChildConnectionCommand =>
-        _ParentChildConnectionCommand ??= new LambdaCommandAsync(ConnectParentChildAsync);
+        _ParentChildConnectionCommand ??= new LambdaCommandAsync(ConnectParentChildAsync, () => SelectedChild is not null && SelectedParent is not null);
 
         // Метод для установления связи родителя и ребенка
         private async Task ConnectParentChildAsync()
