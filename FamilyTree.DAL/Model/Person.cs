@@ -12,9 +12,6 @@
 
         public int? SpouseId { get; set; } // Идентификатор супруга (может быть null)
         public Person? Spouse { get; set; } // Навигационное свойство для супруга
-        public override string ToString()
-        {
-            return $"{Name}, {DateOfBirth}, {Enum.GetName(Gender)} ";
-        }
+        public override string ToString() => $"{Name}, {DateOfBirth}, {Enum.GetName(Gender)} ";
     }
 }

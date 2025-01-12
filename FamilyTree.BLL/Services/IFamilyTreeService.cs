@@ -14,5 +14,8 @@ namespace FamilyTree.BLL.Services
 
         Task<IEnumerable<Person>> GetAllAncestorsAsync(Person p);
         Task<IEnumerable<Person>> GetCommonAncestorsAsync(Person p1, Person p2);
+
+        Task<IEnumerable<Person?>> GetChildrenAsync(Person person);
+        Task<IEnumerable<Person?>> GetParentsAsync(Person person);
     }
 }

@@ -6,7 +6,7 @@ using FamilyTree.Presentation.ViewModels.Services.Dialogs;
 using FamilyTree.Presentation.Views.Windows;
 using MathCore.ViewModels;
 using MathCore.WPF.Commands;
-using QuickGraph;
+
 
 namespace FamilyTree.Presentation.ViewModels
 {
@@ -27,6 +27,12 @@ namespace FamilyTree.Presentation.ViewModels
         public ICommand RemovePersonCommand =>
             _removePersonCommand ??= new LambdaCommand(App.OpenWindow<RemovePersonWindow>);
 
+
+        private ICommand? _ShowClosestRelativesCommand;
+
+        public ICommand ShowClosestRelativesCommand =>
+            _ShowClosestRelativesCommand ??= new LambdaCommand(App.OpenWindow<ShowClosestRelativesWindow>);
+
         public ObservableCollection<Person> FamilyTree { get; } = new ObservableCollection<Person>();
 
        
@@ -38,31 +44,11 @@ namespace FamilyTree.Presentation.ViewModels
             _userDialog = userDialog;
             _ = LoadFamilyTreeAsync();
 
-            // Инициализируем HTML-контент
-            // Инициализация графа
-            _familyGraph = new BidirectionalGraph<string, Edge<string>>();
-
-            // Пример добавления элементов в граф (генеалогия)
-            _familyGraph.AddVertex("Иван Иванов");
-            _familyGraph.AddVertex("Мария Сидорова");
-            _familyGraph.AddEdge(new Edge<string>("Иван Иванов", "Мария Сидорова"));
-
-            _familyGraph.AddVertex("Петр Петров");
-            _familyGraph.AddEdge(new Edge<string>("Иван Иванов", "Петр Петров"));
-            // Обновляем граф через уведомление
-            OnPropertyChanged(nameof(FamilyGraph));
+            
 
         }
 
-        // Граф (связи) для отображения
-        private BidirectionalGraph<string, Edge<string>> _familyGraph;
-        public BidirectionalGraph<string, Edge<string>> FamilyGraph
-        {
-            get => _familyGraph;
-            set => Set(ref _familyGraph, value);
-        }
-
-
+       
         // Метод для загрузки семейного дерева
         public async Task LoadFamilyTreeAsync()
         {

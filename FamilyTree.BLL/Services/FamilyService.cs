@@ -241,4 +241,27 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
 
         return commonAncestors;
     }
+
+    public async Task<IEnumerable<Person?>> GetChildrenAsync(Person person)
+    {
+        if (person == null) throw new ArgumentNullException(nameof(person));
+
+        // Получаем человека с навигационным свойством детей
+        var personWithChildren = await _repository.GetAsync(person.Id);
+
+        // Возвращаем список детей или пустой список, если детей нет
+        return personWithChildren?.Children?.Select(fr => fr.Child) ?? [];
+    }
+
+    public async Task<IEnumerable<Person?>> GetParentsAsync(Person person)
+    {
+        if (person == null) throw new ArgumentNullException(nameof(person));
+
+        // Получаем человека с навигационным свойством детей
+        var personWithParents = await _repository.GetAsync(person.Id);
+
+        // Возвращаем список детей или пустой список, если детей нет
+        return personWithParents?.Parents?.Select(fr => fr.Child) ?? [];
+    }
+
 }

@@ -17,7 +17,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\FamilyTree.BLL\FamilyTree.BLL.csproj" />
 		<ProjectReference Include="..\FamilyTree.DAL\FamilyTree.DAL.csproj" />
-		<PackageReference Include="GraphSharp" Version="1.1.0" />
 		<PackageReference Include="MathCore.WPF" Version="0.0.48" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
 			<PrivateAssets>all</PrivateAssets>
@@ -27,6 +26,7 @@
 		<PackageReference Include="MahApps.Metro.IconPacks.Material" Version="4.11.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
 	</ItemGroup>
 
 

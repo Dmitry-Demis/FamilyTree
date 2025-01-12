@@ -34,6 +34,6 @@ namespace FamilyTree.Presentation.Models
 
         public IEnumerable<FamilyRelation>? Parents => Base.Parents;
 
-        public IEnumerable<FamilyRelation> Children => Base.Children;
+        public IEnumerable<FamilyRelation>? Children => Base.Children;
     }
 }

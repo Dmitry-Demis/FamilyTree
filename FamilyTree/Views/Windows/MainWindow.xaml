@@ -8,7 +8,7 @@
         d:DataContext="{d:DesignInstance Type=viewModels1:MainWindowViewModel}"
         Title="{Binding Title}" Height="450" Width="950"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
-        xmlns:controls="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls">
+        >
     
     <Grid>
         <Grid.RowDefinitions>
@@ -28,14 +28,9 @@
                     <MenuItem Header="Супружескую связь" Command="{Binding AddSpouseCommand}" />
                 </MenuItem>
                 <!-- Remove Person Menu Item -->
-                <MenuItem Header="Удалить человека" Command="{Binding RemovePersonCommand}" />
+                <MenuItem Header="Вывести родственников" Command="{Binding ShowClosestRelativesCommand}" />
             </MenuItem>
         </Menu>
 
-        <controls:GraphLayout Background="Aqua"
-                           Grid.Row="1"
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                           Graph="{Binding FamilyGraph, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                           />
     </Grid>
 </Window>
