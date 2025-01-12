@@ -208,7 +208,7 @@ namespace FamilyTree.Presentation.ViewModels
             {
                 var parentNode = new TreeNode
                 {
-                    Name = $"{parent.Name} (родитель)",
+                    Name = $"{parent.ToString()} (родитель)",
                     X = parentX,
                     Y = parentY
                 };
@@ -234,7 +234,7 @@ namespace FamilyTree.Presentation.ViewModels
             {
                 var childNode = new TreeNode
                 {
-                    Name = $"{child.Name} (ребёнок)",
+                    Name = $"{child.ToString()} (ребёнок)",
                     X = childX,
                     Y = childY
                 };
