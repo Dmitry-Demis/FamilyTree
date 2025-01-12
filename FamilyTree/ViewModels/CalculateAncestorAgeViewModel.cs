@@ -117,7 +117,7 @@ namespace FamilyTree.Presentation.ViewModels
                 var descendant = SelectedDescendant;
 
                 // Получаем всех предков выбранного потомка
-                var ancestors = await _familyService.GetAllAncestorsAsync(descendant.Model);
+                var ancestors = await _familyService.GetAllAncestorsAsync(descendant);
 
                 // Проверяем, является ли выбранный предок в списке предков
                 if (ancestors.All(a => a.Id != ancestor.Id))
