@@ -17,7 +17,7 @@ namespace FamilyTree.Presentation.ViewModels
         public string Title => "Удалить человека";
 
         // Список людей, с которыми работает приложение
-        public ObservableCollection<PersonWrapper> People { get; } = new ObservableCollection<PersonWrapper>();
+        public ObservableCollection<PersonWrapper> People { get; } = [];
 
         // Выбранный человек
         private PersonWrapper? _selectedPerson = new(new Person());

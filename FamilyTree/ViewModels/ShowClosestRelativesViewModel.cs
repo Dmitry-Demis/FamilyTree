@@ -37,10 +37,10 @@ namespace FamilyTree.Presentation.ViewModels
 
         public ObservableCollection<PersonWrapper> People { get; private set; } = []; // Инициализация коллекции People
         // Список родителей
-        private ObservableCollection<PersonWrapper> Parents { get; set; } = [];
+        private ObservableCollection<PersonWrapper> Parents { get; } = [];
 
         // Список детей
-        private ObservableCollection<PersonWrapper> Children { get; set; } = [];
+        private ObservableCollection<PersonWrapper> Children { get; } = [];
 
         // Выбранный человек
         private PersonWrapper? _selectedPerson;
@@ -173,8 +173,8 @@ namespace FamilyTree.Presentation.ViewModels
             set => Set(ref _canvasHeight, value);
         }
 
-        public ObservableCollection<TreeNode> TreeNodes { get; private set; } = [];
-        public ObservableCollection<Link> Links { get; private set; } = [];
+        public ObservableCollection<TreeNode> TreeNodes { get; } = [];
+        public ObservableCollection<Link> Links { get; } = [];
 
         // Генерация дерева с расчётом координат
         private void GenerateTree()

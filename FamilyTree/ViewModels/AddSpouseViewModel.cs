@@ -20,10 +20,10 @@ namespace FamilyTree.Presentation.ViewModels
         public string Title => "Добавить супругов";
 
         // Коллекция мужчин
-        public ObservableCollection<PersonWrapper> Men { get; private set; } = new ObservableCollection<PersonWrapper>();
+        public ObservableCollection<PersonWrapper> Men { get; } = new ObservableCollection<PersonWrapper>();
 
         // Коллекция женщин, отфильтрованных для выбранного мужчины
-        public ObservableCollection<PersonWrapper> Women { get; private set; } = new ObservableCollection<PersonWrapper>();
+        public ObservableCollection<PersonWrapper> Women { get; } = new ObservableCollection<PersonWrapper>();
 
         // Словарь всех людей, разделённых по полу
         private Dictionary<Gender, List<PersonWrapper>> _peopleByGender = new();

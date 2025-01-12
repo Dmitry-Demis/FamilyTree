@@ -6,7 +6,8 @@
         mc:Ignorable="d"
         Title="Все предки" Height="600" Width="800"
         DataContext="{Binding ShowAllAncestorsViewModel, Source={StaticResource Locator}}"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity">
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:FamilyTree.Presentation.ViewModels">
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -29,46 +30,14 @@
                     Margin="5"/>
         </StackPanel>
 
-        <Canvas Background="LightGray" Grid.Row="0">
-            <!-- Стрелочки -->
-            <ItemsControl ItemsSource="{Binding Links}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Line X1="{Binding StartX}" 
-                              Y1="{Binding StartY}" 
-                              X2="{Binding EndX}" 
-                              Y2="{Binding EndY}" 
-                              Stroke="Black" 
-                              StrokeThickness="2" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <TreeView ItemsSource="{Binding AncestorsTree}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type local:TNode}" ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
 
-            <!-- Узлы -->
-            <ItemsControl ItemsSource="{Binding TreeNodes}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding X}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="Black" BorderThickness="1" Background="White" Width="120" Height="50">
-                            <TextBlock Text="{Binding Name}" 
-                                       TextWrapping="Wrap" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center" />
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Canvas>
 
     </Grid>
 </Window>

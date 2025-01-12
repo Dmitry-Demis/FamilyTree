@@ -1,160 +1,120 @@
-﻿using FamilyTree.BLL.Services;
-using FamilyTree.Presentation.Models;
-using FamilyTree.Presentation.ViewModels.Services.Dialogs;
-using MathCore.WPF.Commands;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using MathCore.WPF.ViewModels;
+using FamilyTree.BLL.Services;
 using FamilyTree.DAL.Model;
-using System.ComponentModel;
+using FamilyTree.Presentation.Models;
+using MathCore.ViewModels;
 
 namespace FamilyTree.Presentation.ViewModels
 {
-
-    public class Node
-    {
-        public string Name { get; set; } = string.Empty; // Имя узла
-        public ObservableCollection<Node> Children { get; set; } = new ObservableCollection<Node>(); // Дети узла
-        public double X { get; set; } // Координата X для отображения
-        public double Y { get; set; } // Координата Y для отображения
-        public int Level { get; set; } // Уровень узла в дереве
-
-        public Node(string name, int level)
-        {
-            Name = name;
-            Level = level;
-        }
-    }
-
-
-public class ShowAllAncestorsViewModel : INotifyPropertyChanged
+    public class ShowAllAncestorsViewModel : ViewModel
     {
         private readonly IFamilyTreeService _familyService;
 
-        public ObservableCollection<Node> TreeNodes { get; set; } = new ObservableCollection<Node>();
-        public ObservableCollection<PersonWrapper> People { get; set; } = new ObservableCollection<PersonWrapper>(); // Коллекция людей
-        private PersonWrapper? _selectedPerson; // Приватное поле для SelectedPerson
+        public string Title => "Показать всех предков";
 
+        // Коллекция для отображения предков в TreeView
+        public ObservableCollection<TNode> AncestorsTree { get; private set; } = new ObservableCollection<TNode>();
+
+        // Выбранный человек
+        private PersonWrapper? _selectedPerson;
         public PersonWrapper? SelectedPerson
         {
             get => _selectedPerson;
             set
             {
-                if (_selectedPerson != value)
-                {
-                    _selectedPerson = value;
-                    OnPropertyChanged(nameof(SelectedPerson)); // Вызов события изменения свойства
-                    LoadAncestorsAsync(_selectedPerson); // Загружаем предков, если выбран человек
-                }
+                if (Set(ref _selectedPerson, value))
+                    _ = LoadAncestorsAsync(); // Запускаем асинхронный метод без ожидания
             }
         }
+
+        // Коллекция всех людей для выбора
+        public ObservableCollection<PersonWrapper> People { get; private set; } = new ObservableCollection<PersonWrapper>();
 
         public ShowAllAncestorsViewModel(IFamilyTreeService familyService)
         {
             _familyService = familyService;
-            _ = LoadPeopleAsync();
+            _ = LoadPeopleAsync(); // Запускаем асинхронную загрузку людей
         }
 
-        // Метод для загрузки людей
-        public async Task LoadPeopleAsync()
+        // Загрузка всех людей для выбора
+        private async Task LoadPeopleAsync()
         {
             try
             {
-                // Загружаем список людей и оборачиваем их в PersonWrapper
-                People = new ObservableCollection<PersonWrapper>((await _familyService.LoadPeopleAsync())
-                    .Select(person => new PersonWrapper(person))
-                    .OrderBy(p => p.Name));
-
-                // Устанавливаем первого человека в качестве выбранного
+                var people = await _familyService.LoadPeopleAsync();
+                People.Clear();
+                foreach (var person in people)
+                {
+                    People.Add(new PersonWrapper(person));
+                }
                 SelectedPerson = People.FirstOrDefault();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка при загрузке списка людей: {ex.Message}");
+                Console.WriteLine($"Ошибка загрузки людей: {ex.Message}");
             }
         }
 
-        // Метод для загрузки и построения всех предков
-        public async Task LoadAncestorsAsync(Person? selectedPerson)
+        // Загрузка предков и построение дерева
+        public async Task LoadAncestorsAsync()
         {
-            if (selectedPerson == null)
-                return;
-
-            // Получаем все предков текущего человека
-            var allAncestors = await _familyService.GetAllAncestorsAsync(selectedPerson);
-
-            // Создаем корневой узел
-            var rootNode = new Node(selectedPerson.ToString(), 0);
-
-            // Группировка предков по уровням
-            foreach (var ancestor in allAncestors)
+            if (SelectedPerson == null)
             {
-                var level = 1;
-                var ancestorNode = new Node(ancestor.ToString(), level);
-                rootNode.Children.Add(ancestorNode);
+                Console.WriteLine("Выберите человека.");
+                return;
+            }
 
-                // Добавляем родителей и сдвигаем их по уровням
-                var parents = await _familyService.GetParentsAsync(ancestor);
+            try
+            {
+                // Получаем список всех предков
+                var ancestors = await _familyService.GetAllAncestorsAsync(SelectedPerson);
 
-                foreach (var parent in parents)
+                AncestorsTree.Clear();
+
+                // Добавляем самого человека в корень дерева
+                var rootNode = new TNode { Name = SelectedPerson.ToString() };
+                AncestorsTree.Add(rootNode);
+
+                // Строим дерево начиная с его предков
+                foreach (var ancestor in ancestors)
                 {
-                    if (parent != null)
-                    {
-                        var parentNode = new Node(parent.ToString(), level + 1);
-                        ancestorNode.Children.Add(parentNode);
-
-                        // Получаем супруга и добавляем его рядом
-                        var spouse = await _familyService.GetSpouseAsync(parent.SpouseId);
-                        if (spouse != null)
-                        {
-                            var spouseNode = new Node(spouse.ToString(), level + 1);
-                            ancestorNode.Children.Add(spouseNode);
-                        }
-                    }
+                    AddAncestorToTree(ancestor, ancestors, rootNode.Children);
                 }
             }
-
-            // Устанавливаем позиции для всех узлов
-            PositionTreeNodes(rootNode, 0, 0);
-
-            // Обновляем TreeNodes для отображения
-            TreeNodes.Clear();
-            TreeNodes.Add(rootNode);
-        }
-
-        // Рекурсивная позиция узлов
-        private void PositionTreeNodes(Node node, double x, double y)
-        {
-            node.X = x;
-            node.Y = y;
-
-            // Горизонтальное смещение для каждого ребенка
-            double offsetX = x;
-            double offsetY = y + 100; // Отступ по вертикали для следующего уровня
-
-            foreach (var child in node.Children)
+            catch (Exception ex)
             {
-                PositionTreeNodes(child, offsetX, offsetY);
-                offsetX += 150; // Горизонтальное распределение между детьми
+                Console.WriteLine($"Ошибка загрузки предков: {ex.Message}");
             }
         }
 
-        // Событие изменения свойства для INotifyPropertyChanged
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        // Добавление предка в дерево
+        private void AddAncestorToTree(Person current, IEnumerable<Person> allAncestors, ObservableCollection<TNode> parentChildren)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            // Создаем узел для текущего человека
+            var node = new TNode { Name = current.ToString() };
+
+            // Добавляем узел в родительскую коллекцию
+            parentChildren.Add(node);
+
+            // Находим детей текущего человека через FamilyRelation
+            var children = allAncestors
+                .Where(person => person.Parents != null && person.Parents.Any(p => p.Parent == current));
+
+            // Рекурсивно добавляем детей как подузлы
+            foreach (var child in children)
+            {
+                AddAncestorToTree(child, allAncestors, node.Children);
+            }
         }
+
     }
 
 
-
-
-
+    // Модель узла дерева
+    public class TNode
+    {
+        public string Name { get; set; } = string.Empty;
+        public ObservableCollection<TNode> Children { get; set; } = new ObservableCollection<TNode>();
+    }
 }
