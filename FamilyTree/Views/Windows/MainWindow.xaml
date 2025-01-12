@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         xmlns:viewModels1="clr-namespace:FamilyTree.Presentation.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewModels1:MainWindowViewModel}"
-        Title="{Binding Title}" Height="450" Width="950"
+        Title="{Binding viewModels1:MainWindowViewModel.Title}" Height="450" Width="950"
         DataContext="{Binding MainWindowViewModel, Source={StaticResource Locator}}"
         >
     

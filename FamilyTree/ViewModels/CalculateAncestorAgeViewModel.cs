@@ -98,9 +98,9 @@ namespace FamilyTree.Presentation.ViewModels
         }
 
         
-        private ICommand? _CalculateAgeCommand;
+        private ICommand? _calculateAgeCommand;
         public ICommand CalculateAgeCommand =>
-            _CalculateAgeCommand ??= new LambdaCommandAsync(CalculateAgeAsync, () => SelectedAncestor != null && SelectedDescendant != null);
+            _calculateAgeCommand ??= new LambdaCommandAsync(CalculateAgeAsync, () => SelectedAncestor != null && SelectedDescendant != null);
 
         // Метод для вычисления возраста предка при рождении потомка
         private async Task CalculateAgeAsync()

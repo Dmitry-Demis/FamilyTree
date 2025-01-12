@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace StoreCatalogPresentation.Models;
+namespace FamilyTree.Presentation.Models;
 
 public class Wrapper<T>(T baseObject) : INotifyPropertyChanged
     where T : class
 {
-    public T Base { get; } = baseObject ?? throw new ArgumentNullException(nameof(baseObject));
+    protected T Base { get; } = baseObject ?? throw new ArgumentNullException(nameof(baseObject));
 
     public static implicit operator T(Wrapper<T> wrapper) =>
         wrapper.Base;

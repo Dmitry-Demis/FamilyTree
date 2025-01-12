@@ -1,6 +1,5 @@
 ﻿
 using FamilyTree.DAL.Model;
-using StoreCatalogPresentation.Models;
 
 namespace FamilyTree.Presentation.Models
 {

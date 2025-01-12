@@ -14,7 +14,7 @@ namespace FamilyTree.Presentation.ViewModels
     {
         private readonly IFamilyTreeService _familyTreeService;
         private readonly IUserDialogService _userDialog;
-        public string Title => "Генеалогическое древо";
+        public static string Title => "Генеалогическое древо";
 
         private ICommand? _createPersonCommand;
 
@@ -28,12 +28,12 @@ namespace FamilyTree.Presentation.ViewModels
             _removePersonCommand ??= new LambdaCommand(App.OpenWindow<RemovePersonWindow>);
 
 
-        private ICommand? _ShowClosestRelativesCommand;
+        private ICommand? _showClosestRelativesCommand;
 
         public ICommand ShowClosestRelativesCommand =>
-            _ShowClosestRelativesCommand ??= new LambdaCommand(App.OpenWindow<ShowClosestRelativesWindow>);
+            _showClosestRelativesCommand ??= new LambdaCommand(App.OpenWindow<ShowClosestRelativesWindow>);
 
-        public ObservableCollection<Person> FamilyTree { get; } = new ObservableCollection<Person>();
+        private ObservableCollection<Person> FamilyTree { get; } = [];
 
        
         public MainWindowViewModel(
@@ -50,7 +50,7 @@ namespace FamilyTree.Presentation.ViewModels
 
        
         // Метод для загрузки семейного дерева
-        public async Task LoadFamilyTreeAsync()
+        private async Task LoadFamilyTreeAsync()
         {
             try
             {
@@ -77,28 +77,28 @@ namespace FamilyTree.Presentation.ViewModels
         }
 
        
-        private ICommand? _AddParentCommand;
+        private ICommand? _addParentCommand;
         public ICommand AddParentCommand =>
-            _AddParentCommand ??= new LambdaCommand(App.OpenWindow<AddParentChildWindow>);
+            _addParentCommand ??= new LambdaCommand(App.OpenWindow<AddParentChildWindow>);
 
-        private ICommand? _AddSpouseCommand;
+        private ICommand? _addSpouseCommand;
         public ICommand AddSpouseCommand =>
-            _AddSpouseCommand ??= new LambdaCommand(App.OpenWindow<AddSpouseWindow>);
+            _addSpouseCommand ??= new LambdaCommand(App.OpenWindow<AddSpouseWindow>);
 
-        private ICommand? _ShowAllAncestorsCommand;
+        private ICommand? _showAllAncestorsCommand;
         public ICommand ShowAllAncestorsCommand =>
-            _ShowAllAncestorsCommand ??= new LambdaCommand(App.OpenWindow<ShowAllAncestorsWindow>);
+            _showAllAncestorsCommand ??= new LambdaCommand(App.OpenWindow<ShowAllAncestorsWindow>);
 
-        private ICommand? _CalculateAgeCommand;
+        private ICommand? _calculateAgeCommand;
 
         public ICommand CalculateAgeCommand
             =>
-                _CalculateAgeCommand ??= new LambdaCommand(App.OpenWindow<CalculateAncestorAgeWindow>);
+                _calculateAgeCommand ??= new LambdaCommand(App.OpenWindow<CalculateAncestorAgeWindow>);
 
-        private ICommand? _ClearDbCommand;
+        private ICommand? _clearDbCommand;
 
         public ICommand ClearDbCommand
             =>
-                _ClearDbCommand ??= new LambdaCommand(() => _familyTreeService.DeleteDatabaseAsync());
+                _clearDbCommand ??= new LambdaCommand(() => _familyTreeService.DeleteDatabaseAsync());
     }
 }

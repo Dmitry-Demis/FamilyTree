@@ -16,15 +16,15 @@ using System.ComponentModel;
 namespace FamilyTree.Presentation.ViewModels
 {
 
-    public class TNode
+    public class Node
     {
         public string Name { get; set; } = string.Empty; // Имя узла
-        public ObservableCollection<TNode> Children { get; set; } = new ObservableCollection<TNode>(); // Дети узла
+        public ObservableCollection<Node> Children { get; set; } = new ObservableCollection<Node>(); // Дети узла
         public double X { get; set; } // Координата X для отображения
         public double Y { get; set; } // Координата Y для отображения
         public int Level { get; set; } // Уровень узла в дереве
 
-        public TNode(string name, int level)
+        public Node(string name, int level)
         {
             Name = name;
             Level = level;
@@ -36,7 +36,7 @@ public class ShowAllAncestorsViewModel : INotifyPropertyChanged
     {
         private readonly IFamilyTreeService _familyService;
 
-        public ObservableCollection<TNode> TreeNodes { get; set; } = new ObservableCollection<TNode>();
+        public ObservableCollection<Node> TreeNodes { get; set; } = new ObservableCollection<Node>();
         public ObservableCollection<PersonWrapper> People { get; set; } = new ObservableCollection<PersonWrapper>(); // Коллекция людей
         private PersonWrapper? _selectedPerson; // Приватное поле для SelectedPerson
 
@@ -89,13 +89,13 @@ public class ShowAllAncestorsViewModel : INotifyPropertyChanged
             var allAncestors = await _familyService.GetAllAncestorsAsync(selectedPerson);
 
             // Создаем корневой узел
-            var rootNode = new TNode(selectedPerson.ToString(), 0);
+            var rootNode = new Node(selectedPerson.ToString(), 0);
 
             // Группировка предков по уровням
             foreach (var ancestor in allAncestors)
             {
                 var level = 1;
-                var ancestorNode = new TNode(ancestor.ToString(), level);
+                var ancestorNode = new Node(ancestor.ToString(), level);
                 rootNode.Children.Add(ancestorNode);
 
                 // Добавляем родителей и сдвигаем их по уровням
@@ -105,14 +105,14 @@ public class ShowAllAncestorsViewModel : INotifyPropertyChanged
                 {
                     if (parent != null)
                     {
-                        var parentNode = new TNode(parent.ToString(), level + 1);
+                        var parentNode = new Node(parent.ToString(), level + 1);
                         ancestorNode.Children.Add(parentNode);
 
                         // Получаем супруга и добавляем его рядом
                         var spouse = await _familyService.GetSpouseAsync(parent.SpouseId);
                         if (spouse != null)
                         {
-                            var spouseNode = new TNode(spouse.ToString(), level + 1);
+                            var spouseNode = new Node(spouse.ToString(), level + 1);
                             ancestorNode.Children.Add(spouseNode);
                         }
                     }
@@ -128,7 +128,7 @@ public class ShowAllAncestorsViewModel : INotifyPropertyChanged
         }
 
         // Рекурсивная позиция узлов
-        private void PositionTreeNodes(TNode node, double x, double y)
+        private void PositionTreeNodes(Node node, double x, double y)
         {
             node.X = x;
             node.Y = y;

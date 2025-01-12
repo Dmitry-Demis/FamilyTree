@@ -170,7 +170,7 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         var descendants = new List<Person>();
         var visited = new HashSet<int>();
 
-        async Task DFSAsync(int currentId)
+        async Task DfsAsync(int currentId)
         {
             // Загружаем текущего человека
             var person = await _repository.GetAsync(currentId);
@@ -188,11 +188,11 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
 
                 // Добавляем потомка и запускаем обход его потомков
                 descendants.Add(child);
-                await DFSAsync(child.Id);
+                await DfsAsync(child.Id);
             }
         }
 
-        await DFSAsync(p.Id);
+        await DfsAsync(p.Id);
         return descendants;
     }
 
@@ -201,7 +201,7 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         var ancestors = new List<Person>();
         var visited = new HashSet<int>(); // Чтобы избежать циклов и повторных посещений
 
-        async Task DFSAsync(int currentId)
+        async Task DfsAsync(int currentId)
         {
             // Загружаем текущего человека
             var currentPerson = await _repository.GetAsync(currentId);
@@ -230,11 +230,11 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
                 }
 
                 // Запускаем рекурсивный обход для этого родителя
-                await DFSAsync(parent.Id);
+                await DfsAsync(parent.Id);
             }
         }
 
-        await DFSAsync(person.Id);
+        await DfsAsync(person.Id);
         return ancestors.Distinct().OrderBy(a => a.Name).ToList(); // Убираем дубликаты и сортируем
     }
 

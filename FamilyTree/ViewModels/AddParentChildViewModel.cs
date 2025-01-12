@@ -150,9 +150,9 @@ namespace FamilyTree.Presentation.ViewModels
         }
 
 
-        private ICommand? _ParentChildConnectionCommand;
+        private ICommand? _parentChildConnectionCommand;
         public ICommand ParentChildConnectionCommand =>
-        _ParentChildConnectionCommand ??= new LambdaCommandAsync(ConnectParentChildAsync, () => SelectedChild is not null && SelectedParent is not null);
+        _parentChildConnectionCommand ??= new LambdaCommandAsync(ConnectParentChildAsync, () => SelectedChild is not null && SelectedParent is not null);
 
         // Метод для установления связи родителя и ребенка
         private async Task ConnectParentChildAsync()
