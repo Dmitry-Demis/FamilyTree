@@ -34,7 +34,7 @@ namespace FamilyTree.Presentation.ViewModels
             {
                 if (null != value && Set(ref _selectedAncestor, value))
                 {
-                    UpdateDescendantsList();
+
                 }
             }
         }
@@ -97,33 +97,7 @@ namespace FamilyTree.Presentation.ViewModels
             }
         }
 
-        // Обновление списка потомков
-        private void UpdateDescendantsList()
-        {
-            if (SelectedAncestor == null) return;
-
-            Descendants.Clear();
-            var ancestorBirthDate = SelectedAncestor.DateOfBirth;
-
-            foreach (var person in Ancestors)
-            {
-                if (person != SelectedAncestor && person.DateOfBirth > ancestorBirthDate)
-                {
-                    Descendants.Add(person);
-                }
-            }
-
-            if (SelectedDescendant != null && !Descendants.Contains(SelectedDescendant))
-            {
-                SelectedDescendant = null;
-            }
-
-            if (SelectedDescendant == null && Descendants.Any())
-            {
-                SelectedDescendant = Descendants.FirstOrDefault();
-            }
-        }
-
+        
         private ICommand? _CalculateAgeCommand;
         public ICommand CalculateAgeCommand =>
             _CalculateAgeCommand ??= new LambdaCommandAsync(CalculateAgeAsync, () => SelectedAncestor != null && SelectedDescendant != null);
@@ -142,6 +116,17 @@ namespace FamilyTree.Presentation.ViewModels
                 var ancestor = SelectedAncestor;
                 var descendant = SelectedDescendant;
 
+                // Получаем всех предков выбранного потомка
+                var ancestors = await _familyService.GetAllAncestorsAsync(descendant.Model);
+
+                // Проверяем, является ли выбранный предок в списке предков
+                if (ancestors.All(a => a.Id != ancestor.Id))
+                {
+                    _userDialog.ShowError($"Выбранный предок {ancestor.Name} не является предком для потомка {descendant.Name}.");
+                    return;
+                }
+
+                // Вычисляем возраст предка при рождении потомка
                 var ageAtBirth = descendant.DateOfBirth.Year - ancestor.DateOfBirth.Year;
                 if (descendant.DateOfBirth < ancestor.DateOfBirth.AddYears(ageAtBirth))
                 {
@@ -156,5 +141,6 @@ namespace FamilyTree.Presentation.ViewModels
                 Console.WriteLine($"Ошибка вычисления возраста: {ex.Message}");
             }
         }
+
     }
 }
