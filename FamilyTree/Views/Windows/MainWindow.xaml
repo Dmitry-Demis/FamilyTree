@@ -34,6 +34,8 @@
 
                 <MenuItem Header="Вычислить возраст" Command="{Binding CalculateAgeCommand}" />
 
+                <MenuItem Header="Удалить БД" Command="{Binding ClearDbCommand}" />
+
             </MenuItem>
         </Menu>
 

@@ -291,4 +291,18 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         return spouse;
     }
 
+    public async Task DeleteDatabaseAsync()
+    {
+        try
+        {
+            Console.WriteLine("Удаление всей базы данных...");
+            await _repository.ClearAllAsync();
+            Console.WriteLine("База данных успешно удалена.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при удалении базы данных: {ex.Message}");
+            throw;
+        }
+    }
 }

@@ -95,5 +95,10 @@ namespace FamilyTree.Presentation.ViewModels
             =>
                 _CalculateAgeCommand ??= new LambdaCommand(App.OpenWindow<CalculateAncestorAgeWindow>);
 
+        private ICommand? _ClearDbCommand;
+
+        public ICommand ClearDbCommand
+            =>
+                _ClearDbCommand ??= new LambdaCommand(() => _familyTreeService.DeleteDatabaseAsync());
     }
 }
