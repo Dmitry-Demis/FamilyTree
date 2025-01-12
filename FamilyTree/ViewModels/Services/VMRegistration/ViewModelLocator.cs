@@ -13,5 +13,6 @@ namespace FamilyTree.Presentation.ViewModels.Services.VMRegistration
         public static AddParentChildViewModel AddParentChildViewModel => Resolve<AddParentChildViewModel>();
         public static AddSpouseViewModel AddSpouseViewModel => Resolve<AddSpouseViewModel>();
         public static ShowClosestRelativesViewModel ShowClosestRelativesViewModel => Resolve<ShowClosestRelativesViewModel>();
+        public static ShowAllAncestorsViewModel ShowAllAncestorsViewModel => Resolve<ShowAllAncestorsViewModel>();
     }
 }

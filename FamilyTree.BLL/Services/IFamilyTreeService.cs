@@ -17,5 +17,6 @@ namespace FamilyTree.BLL.Services
 
         Task<IEnumerable<Person?>> GetChildrenAsync(Person person);
         Task<IEnumerable<Person?>> GetParentsAsync(Person person);
+        Task<Person?> GetSpouseAsync(int? spouseId);
     }
 }

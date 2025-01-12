@@ -13,10 +13,12 @@ namespace FamilyTree.Presentation.ViewModels
 {
     public class TreeNode
     {
-        public string Name { get; set; } = string.Empty; // Имя узла (человека)
+        public string Name { get; set; } = string.Empty; // Имя узла
         public double X { get; set; } // Координата X
         public double Y { get; set; } // Координата Y
+        public int Level { get; set; } // Уровень вложенности
     }
+
 
     public class Link
     {
@@ -31,7 +33,7 @@ namespace FamilyTree.Presentation.ViewModels
         private readonly IFamilyTreeService _familyService;
         private readonly IUserDialogService _userDialog;
 
-        public string Title => "Просмотр ближайших родственников";
+        public string Title => "Просмотр родственников";
 
         public ObservableCollection<PersonWrapper> People { get; set; } = new ObservableCollection<PersonWrapper>(); // Инициализация коллекции People
         // Список родителей
@@ -130,6 +132,10 @@ namespace FamilyTree.Presentation.ViewModels
         private ICommand? _showRelativesCommand;
         public ICommand ShowRelativesCommand =>
             _showRelativesCommand ??= new LambdaCommandAsync(ShowRelativesAsync, () => SelectedPerson != null);
+
+        //private ICommand? _showAllRelativesCommand;
+        //public ICommand ShowAllRelativesCommand =>
+        //    _showAllRelativesCommand ??= new LambdaCommandAsync(ShowAllRelativesAsync, () => SelectedPerson != null);
 
         // Команда для отображения ближайших родственников
         private async Task ShowRelativesAsync()

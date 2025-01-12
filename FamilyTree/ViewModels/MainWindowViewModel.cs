@@ -85,6 +85,10 @@ namespace FamilyTree.Presentation.ViewModels
         public ICommand AddSpouseCommand =>
             _AddSpouseCommand ??= new LambdaCommand(App.OpenWindow<AddSpouseWindow>);
 
+        private ICommand? _ShowAllAncestorsCommand;
+        public ICommand ShowAllAncestorsCommand =>
+            _ShowAllAncestorsCommand ??= new LambdaCommand(App.OpenWindow<ShowAllAncestorsWindow>);
+
 
     }
 }

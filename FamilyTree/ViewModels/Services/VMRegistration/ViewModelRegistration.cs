@@ -12,6 +12,7 @@ namespace FamilyTree.Presentation.ViewModels.Services.VMRegistration
            .AddTransient<AddParentChildViewModel>()
            .AddTransient<AddSpouseViewModel>()
            .AddTransient<ShowClosestRelativesViewModel>()
+           .AddTransient<ShowAllAncestorsViewModel>()
         ;
     }
 }

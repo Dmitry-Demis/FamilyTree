@@ -264,4 +264,17 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
         return personWithParents?.Parents?.Select(fr => fr.Child) ?? [];
     }
 
+    public async Task<Person?> GetSpouseAsync(int? spouseId)
+    {
+        if (spouseId == null)
+        {
+            return null;  // Если у родителя нет супруга, возвращаем null
+        }
+
+        // Получаем супруга по идентификатору
+        var spouse = await _repository.GetAsync(spouseId.Value);
+
+        return spouse;
+    }
+
 }

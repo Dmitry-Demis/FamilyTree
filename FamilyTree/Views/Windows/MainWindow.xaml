@@ -29,6 +29,9 @@
                 </MenuItem>
                 <!-- Remove Person Menu Item -->
                 <MenuItem Header="Вывести родственников" Command="{Binding ShowClosestRelativesCommand}" />
+
+                <MenuItem Header="Вывести предков" Command="{Binding ShowAllAncestorsCommand}" />
+
             </MenuItem>
         </Menu>
 
