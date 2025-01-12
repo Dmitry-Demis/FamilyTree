@@ -38,7 +38,7 @@
 
         <!-- Кнопка для вычисления возраста -->
         <Button Content="Рассчитать"
-                Command="{Binding CalculateAncestorAgeCommand}" 
+                Command="{Binding CalculateAgeCommand}" 
                 Margin="5" Grid.Row="2" Grid.Column="1" />
 
         <!-- Результат -->
