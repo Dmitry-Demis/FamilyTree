@@ -89,6 +89,11 @@ namespace FamilyTree.Presentation.ViewModels
         public ICommand ShowAllAncestorsCommand =>
             _ShowAllAncestorsCommand ??= new LambdaCommand(App.OpenWindow<ShowAllAncestorsWindow>);
 
+        private ICommand? _CalculateAgeCommand;
+
+        public ICommand CalculateAgeCommand
+            =>
+                _CalculateAgeCommand ??= new LambdaCommand(App.OpenWindow<CalculateAncestorAgeWindow>);
 
     }
 }

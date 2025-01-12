@@ -1,0 +1,50 @@
+﻿<Window x:Class="FamilyTree.Presentation.Views.Windows.CalculateAncestorAgeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Вычислить возраст предка при рождении потомка"
+        SizeToContent="Height"
+        Width="400"
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding CalculateAncestorAgeViewModel, Source={StaticResource Locator}}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Выбор предка -->
+        <TextBlock Text="Предок:" VerticalAlignment="Center" Margin="5" Grid.Row="0" Grid.Column="0"/>
+        <ComboBox 
+            ItemsSource="{Binding Ancestors}" 
+            SelectedItem="{Binding SelectedAncestor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            Margin="5" Grid.Row="0" Grid.Column="1"/>
+
+        <!-- Выбор потомка -->
+        <TextBlock Text="Потомок:" VerticalAlignment="Center" Margin="5" Grid.Row="1" Grid.Column="0"/>
+        <ComboBox 
+            ItemsSource="{Binding Descendants}" 
+            SelectedItem="{Binding SelectedDescendant, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            Margin="5" Grid.Row="1" Grid.Column="1"/>
+
+        <!-- Кнопка для вычисления возраста -->
+        <Button Content="Рассчитать"
+                Command="{Binding CalculateAncestorAgeCommand}" 
+                Margin="5" Grid.Row="2" Grid.Column="1" />
+
+        <!-- Результат -->
+        <TextBlock Text="Возраст предка при рождении потомка:" TextWrapping="WrapWithOverflow"
+                   VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="0"/>
+        <TextBlock Text="{Binding CalculatedAge, FallbackValue='—'}" 
+                   VerticalAlignment="Center" Margin="5" Grid.Row="3" Grid.Column="1"/>
+    </Grid>
+</Window>

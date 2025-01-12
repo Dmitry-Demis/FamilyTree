@@ -199,7 +199,7 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
     public async Task<IEnumerable<Person>> GetAllAncestorsAsync(Person person)
     {
         var ancestors = new List<Person>();
-        var visited = new HashSet<int>();
+        var visited = new HashSet<int>(); // Чтобы избежать циклов и повторных посещений
 
         async Task DFSAsync(int currentId)
         {
@@ -215,15 +215,29 @@ public class FamilyService(IRepository<Person> personRepository) : IFamilyTreeSe
                 var parent = await _repository.GetAsync(relation.ParentId.Value);
                 if (parent == null) continue;
 
-                // Добавляем предка и запускаем обход его предков
+                // Добавляем родителя в список предков
                 ancestors.Add(parent);
+
+                // Также находим супруга этого родителя
+                if (relation.ParentId.HasValue)
+                {
+                    var spouse = await GetSpouseAsync(parent.SpouseId); // Метод для получения супруга
+                    if (spouse != null && !visited.Contains(spouse.Id))
+                    {
+                        ancestors.Add(spouse);
+                        visited.Add(spouse.Id);
+                    }
+                }
+
+                // Запускаем рекурсивный обход для этого родителя
                 await DFSAsync(parent.Id);
             }
         }
 
         await DFSAsync(person.Id);
-        return ancestors;
+        return ancestors.Distinct().OrderBy(a => a.Name).ToList(); // Убираем дубликаты и сортируем
     }
+
 
     public async Task<IEnumerable<Person>> GetCommonAncestorsAsync(Person p1, Person p2)
     {

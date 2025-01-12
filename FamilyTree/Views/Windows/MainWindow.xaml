@@ -32,6 +32,8 @@
 
                 <MenuItem Header="Вывести предков" Command="{Binding ShowAllAncestorsCommand}" />
 
+                <MenuItem Header="Вычислить возраст" Command="{Binding CalculateAgeCommand}" />
+
             </MenuItem>
         </Menu>
 

@@ -11,54 +11,66 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using MathCore.WPF.ViewModels;
 using FamilyTree.DAL.Model;
+using System.ComponentModel;
 
 namespace FamilyTree.Presentation.ViewModels
 {
-    public class ShowAllAncestorsViewModel : ViewModel
+
+    public class TNode
+    {
+        public string Name { get; set; } = string.Empty; // Имя узла
+        public ObservableCollection<TNode> Children { get; set; } = new ObservableCollection<TNode>(); // Дети узла
+        public double X { get; set; } // Координата X для отображения
+        public double Y { get; set; } // Координата Y для отображения
+        public int Level { get; set; } // Уровень узла в дереве
+
+        public TNode(string name, int level)
+        {
+            Name = name;
+            Level = level;
+        }
+    }
+
+
+public class ShowAllAncestorsViewModel : INotifyPropertyChanged
     {
         private readonly IFamilyTreeService _familyService;
 
-        // Список людей
-        public ObservableCollection<PersonWrapper> People { get; set; } = new ObservableCollection<PersonWrapper>();
+        public ObservableCollection<TNode> TreeNodes { get; set; } = new ObservableCollection<TNode>();
+        public ObservableCollection<PersonWrapper> People { get; set; } = new ObservableCollection<PersonWrapper>(); // Коллекция людей
+        private PersonWrapper? _selectedPerson; // Приватное поле для SelectedPerson
 
-        // Выбранный человек
-        private PersonWrapper? _selectedPerson;
         public PersonWrapper? SelectedPerson
         {
             get => _selectedPerson;
             set
             {
-                if (Set(ref _selectedPerson, value))
+                if (_selectedPerson != value)
                 {
-                    _ = LoadAncestorsAsync(); // Загружаем предков при изменении выбора
+                    _selectedPerson = value;
+                    OnPropertyChanged(nameof(SelectedPerson)); // Вызов события изменения свойства
+                    LoadAncestorsAsync(_selectedPerson); // Загружаем предков, если выбран человек
                 }
             }
         }
 
-        // Список предков
-        public ObservableCollection<TreeNode> TreeNodes { get; private set; } = new ObservableCollection<TreeNode>();
-
-        // Команда для отображения предков
-        private ICommand? _showAllAncestorsCommand;
-        public ICommand ShowAllAncestorsCommand =>
-            _showAllAncestorsCommand ??= new LambdaCommandAsync(ShowAllAncestorsAsync, () => SelectedPerson != null);
-
-        // Конструктор
         public ShowAllAncestorsViewModel(IFamilyTreeService familyService)
         {
             _familyService = familyService;
-            _ = LoadPeopleAsync(); // Загрузка всех людей при инициализации
+            _ = LoadPeopleAsync();
         }
 
-        // Загрузка людей
-        private async Task LoadPeopleAsync()
+        // Метод для загрузки людей
+        public async Task LoadPeopleAsync()
         {
             try
             {
-                var people = await _familyService.LoadPeopleAsync();
-                People = new ObservableCollection<PersonWrapper>(people.Select(person => new PersonWrapper(person)).OrderBy(p => p.Name));
+                // Загружаем список людей и оборачиваем их в PersonWrapper
+                People = new ObservableCollection<PersonWrapper>((await _familyService.LoadPeopleAsync())
+                    .Select(person => new PersonWrapper(person))
+                    .OrderBy(p => p.Name));
 
-                // Для первого выбранного человека показываем предков
+                // Устанавливаем первого человека в качестве выбранного
                 SelectedPerson = People.FirstOrDefault();
             }
             catch (Exception ex)
@@ -67,74 +79,81 @@ namespace FamilyTree.Presentation.ViewModels
             }
         }
 
-        // Загрузка предков
-        private async Task LoadAncestorsAsync()
+        // Метод для загрузки и построения всех предков
+        public async Task LoadAncestorsAsync(Person? selectedPerson)
         {
-            if (SelectedPerson == null) return;
+            if (selectedPerson == null)
+                return;
 
-            try
+            // Получаем все предков текущего человека
+            var allAncestors = await _familyService.GetAllAncestorsAsync(selectedPerson);
+
+            // Создаем корневой узел
+            var rootNode = new TNode(selectedPerson.ToString(), 0);
+
+            // Группировка предков по уровням
+            foreach (var ancestor in allAncestors)
             {
-                var ancestors = new List<TreeNode>();
-                var level = 0;
+                var level = 1;
+                var ancestorNode = new TNode(ancestor.ToString(), level);
+                rootNode.Children.Add(ancestorNode);
 
-                // Добавляем самого человека на первый уровень
-                ancestors.Add(new TreeNode
+                // Добавляем родителей и сдвигаем их по уровням
+                var parents = await _familyService.GetParentsAsync(ancestor);
+
+                foreach (var parent in parents)
                 {
-                    Name = SelectedPerson.ToString(),
-                    Level = level,
-                    X = level * 120, // Расположение по горизонтали с учетом уровня
-                    Y = ancestors.Count * 100 // Расположение по вертикали
-                });
-
-                // Получаем всех предков для выбранного человека
-                var allAncestors = await _familyService.GetAllAncestorsAsync(SelectedPerson);
-
-                // Сортировка предков по уровням
-                foreach (var ancestor in allAncestors)
-                {
-                    ancestors.Add(new TreeNode
+                    if (parent != null)
                     {
-                        Name = ancestor.ToString(),
-                        Level = ++level,
-                        X = level * 120, // Расположение по горизонтали с учетом уровня
-                        Y = ancestors.Count * 100 // Расположение по вертикали
-                    });
-                }
+                        var parentNode = new TNode(parent.ToString(), level + 1);
+                        ancestorNode.Children.Add(parentNode);
 
-                // Обновляем TreeNodes для отображения
-                TreeNodes.Clear();
-                foreach (var ancestor in ancestors)
-                {
-                    TreeNodes.Add(ancestor);
+                        // Получаем супруга и добавляем его рядом
+                        var spouse = await _familyService.GetSpouseAsync(parent.SpouseId);
+                        if (spouse != null)
+                        {
+                            var spouseNode = new TNode(spouse.ToString(), level + 1);
+                            ancestorNode.Children.Add(spouseNode);
+                        }
+                    }
                 }
             }
-            catch (Exception ex)
+
+            // Устанавливаем позиции для всех узлов
+            PositionTreeNodes(rootNode, 0, 0);
+
+            // Обновляем TreeNodes для отображения
+            TreeNodes.Clear();
+            TreeNodes.Add(rootNode);
+        }
+
+        // Рекурсивная позиция узлов
+        private void PositionTreeNodes(TNode node, double x, double y)
+        {
+            node.X = x;
+            node.Y = y;
+
+            // Горизонтальное смещение для каждого ребенка
+            double offsetX = x;
+            double offsetY = y + 100; // Отступ по вертикали для следующего уровня
+
+            foreach (var child in node.Children)
             {
-                Console.WriteLine($"Ошибка при загрузке предков: {ex.Message}");
+                PositionTreeNodes(child, offsetX, offsetY);
+                offsetX += 150; // Горизонтальное распределение между детьми
             }
         }
 
+        // Событие изменения свойства для INotifyPropertyChanged
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        // Асинхронное выполнение команды отображения предков
-        private async Task ShowAllAncestorsAsync()
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (SelectedPerson == null)
-            {
-                Console.WriteLine("Выберите человека, чтобы увидеть его предков.");
-                return;
-            }
-
-            try
-            {
-                await LoadAncestorsAsync();
-                Console.WriteLine($"Все предки для {SelectedPerson.Name} успешно загружены.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка при отображении предков: {ex.Message}");
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+
 
 
 

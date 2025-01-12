@@ -14,5 +14,6 @@ namespace FamilyTree.Presentation.ViewModels.Services.VMRegistration
         public static AddSpouseViewModel AddSpouseViewModel => Resolve<AddSpouseViewModel>();
         public static ShowClosestRelativesViewModel ShowClosestRelativesViewModel => Resolve<ShowClosestRelativesViewModel>();
         public static ShowAllAncestorsViewModel ShowAllAncestorsViewModel => Resolve<ShowAllAncestorsViewModel>();
+        public static CalculateAncestorAgeViewModel CalculateAncestorAgeViewModel => Resolve<CalculateAncestorAgeViewModel>();
     }
 }
