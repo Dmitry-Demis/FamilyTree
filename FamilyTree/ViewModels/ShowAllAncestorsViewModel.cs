@@ -73,7 +73,7 @@ namespace FamilyTree.Presentation.ViewModels
                 AncestorsTree.Clear();
 
                 // Добавляем самого человека в корень дерева
-                var rootNode = new TNode { Name = SelectedPerson.ToString() };
+                var rootNode = new TNode { Name = SelectedPerson.ToString(), Gender = SelectedPerson.Gender };
                 AncestorsTree.Add(rootNode);
 
                 // Строим дерево начиная с его предков
@@ -92,7 +92,11 @@ namespace FamilyTree.Presentation.ViewModels
         private void AddAncestorToTree(Person current, IEnumerable<Person> allAncestors, ObservableCollection<TNode> parentChildren)
         {
             // Создаем узел для текущего человека
-            var node = new TNode { Name = current.ToString() };
+            var node = new TNode
+            {
+                Name = current.ToString(),
+                Gender = current.Gender // Устанавливаем пол для каждого предка
+            };
 
             // Добавляем узел в родительскую коллекцию
             parentChildren.Add(node);
@@ -108,13 +112,16 @@ namespace FamilyTree.Presentation.ViewModels
             }
         }
 
+
     }
 
 
     // Модель узла дерева
     public class TNode
     {
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
+        public Gender Gender { get; set; } // "Male" или "Female"
         public ObservableCollection<TNode> Children { get; set; } = new ObservableCollection<TNode>();
     }
+
 }

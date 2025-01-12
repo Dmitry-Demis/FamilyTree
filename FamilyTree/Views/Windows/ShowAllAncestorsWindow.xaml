@@ -7,7 +7,11 @@
         Title="Все предки" Height="600" Width="800"
         DataContext="{Binding ShowAllAncestorsViewModel, Source={StaticResource Locator}}"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:local="clr-namespace:FamilyTree.Presentation.ViewModels">
+        xmlns:local="clr-namespace:FamilyTree.Presentation.ViewModels.Services.Extensions"
+        xmlns:viewModels="clr-namespace:FamilyTree.Presentation.ViewModels">
+    <Window.Resources>
+        <local:GenderToColorConverter x:Key="GenderToColorConverter" />
+    </Window.Resources>
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -32,8 +36,9 @@
 
         <TreeView ItemsSource="{Binding AncestorsTree}">
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type local:TNode}" ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Name}" />
+                <HierarchicalDataTemplate DataType="{x:Type viewModels:TNode}" ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" Foreground="{Binding Gender, Converter={StaticResource GenderToColorConverter}}">
+                    </TextBlock>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>

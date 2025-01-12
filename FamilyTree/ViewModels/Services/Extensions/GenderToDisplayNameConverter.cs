@@ -19,4 +19,4 @@ public class GenderToDisplayNameConverter : IValueConverter
     {
         return value; // Оставляем без изменений, можно реализовать логику конвертации обратно
     }
-}
+    }
